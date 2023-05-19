@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getMe } from "../redux/actions/authAction";
+import { toast } from "react-toastify";
 
 function Protected({ children }) {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ function Protected({ children }) {
 
   useEffect(() => {
     if (!token) {
+      toast.warn("Please Login First!");
       return navigate("/");
     }
 
