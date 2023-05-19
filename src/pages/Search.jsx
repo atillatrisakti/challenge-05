@@ -9,7 +9,7 @@ function SearchThree() {
   const { query } = location.state;
   const dispatch = useDispatch();
 
-  const movies = useSelector((state) => state.search.searchResults);
+  const { movies } = useSelector((state) => state.search.searchResults);
 
   useEffect(() => {
     dispatch(searchMovies(query));
