@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import { Container, Row, Col, Form, Navbar, InputGroup } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { getMe, logout } from "../redux/actions/authAction";
 
 function NavScroll() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const onSearch = (e) => {
     e.preventDefault();
@@ -14,15 +17,11 @@ function NavScroll() {
     navigate("/search", { state: { query } });
   };
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
+    dispatch(getMe(null, null, null));
+  }, [dispatch]);
 
   return (
     <Navbar
@@ -72,14 +71,15 @@ function NavScroll() {
             {isLoggedIn ? (
               <>
                 <Navbar.Collapse id="navbarScroll" className="justify-content-end">
+                  <span className="text-danger me-4">
+                    Hello, <b>{user?.name}</b>
+                  </span>
                   <Button
                     variant="outline-danger"
                     style={{ borderRadius: "20px", width: "100px" }}
                     as={Link}
                     onClick={() => {
-                      localStorage.removeItem("token");
-                      setIsLoggedIn(false);
-                      return navigate("/");
+                      dispatch(logout(navigate));
                     }}
                   >
                     Logout

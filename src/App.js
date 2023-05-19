@@ -14,51 +14,55 @@ import { ToastContainer } from "react-toastify";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import NoTokenAccess from "./components/NoTokenAccess";
 import Protected from "./components/Protected";
+import { Provider } from "react-redux";
+import store from "./redux/store";
 
 function App() {
   return (
     <>
       <div className="app">
-        <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_OAUTH_CLIENT_ID}>
-          <BrowserRouter>
-            <NoNavbar>
-              <Navbar />
-            </NoNavbar>
+        <Provider store={store}>
+          <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_OAUTH_CLIENT_ID}>
+            <BrowserRouter>
+              <NoNavbar>
+                <Navbar />
+              </NoNavbar>
 
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route
-                path="/details/:id"
-                element={
-                  <Protected>
-                    <Details />
-                  </Protected>
-                }
-              />
-              <Route path="/search" element={<Search />} />
-              <Route path="/all-movies" element={<AllMovies />} />
-              <Route
-                path="/register"
-                element={
-                  <NoTokenAccess>
-                    <Register />
-                  </NoTokenAccess>
-                }
-              />
-              <Route
-                path="/login"
-                element={
-                  <NoTokenAccess>
-                    <Login />
-                  </NoTokenAccess>
-                }
-              />
-            </Routes>
-            <Footer />
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route
+                  path="/details/:id"
+                  element={
+                    <Protected>
+                      <Details />
+                    </Protected>
+                  }
+                />
+                <Route path="/search" element={<Search />} />
+                <Route path="/all-movies" element={<AllMovies />} />
+                <Route
+                  path="/register"
+                  element={
+                    <NoTokenAccess>
+                      <Register />
+                    </NoTokenAccess>
+                  }
+                />
+                <Route
+                  path="/login"
+                  element={
+                    <NoTokenAccess>
+                      <Login />
+                    </NoTokenAccess>
+                  }
+                />
+              </Routes>
+              <Footer />
 
-            <ToastContainer theme="colored" />
-          </BrowserRouter>
-        </GoogleOAuthProvider>
+              <ToastContainer theme="colored" />
+            </BrowserRouter>
+          </GoogleOAuthProvider>
+        </Provider>
       </div>
     </>
   );

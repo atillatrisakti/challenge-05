@@ -1,35 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Navbar from "../components/Navbar";
-import { useParams } from "react-router-dom";
-import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 import "../styles/details.css";
-import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { getDetailMovie } from "../redux/actions/movieAction";
+import { getMe } from "../redux/actions/authAction";
 
 function Details() {
-  const [detailMovie, setDetailMovie] = React.useState({});
-  const [genre, setGenre] = React.useState([]);
-  const [backdropPath, setbackdropPath] = React.useState("");
-  const [user, setUser] = useState("");
-
-  const params = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { id } = useParams();
+  const { detailMovie, genre, backdropPath } = useSelector((state) => state.movie);
 
   const getGenre = genre.genres?.map((gen) => {
     return <h5 className="genre mx-1">{gen.name}</h5>;
   });
 
   React.useEffect(() => {
-    async function getDetailMovie() {
-      try {
-        const response = await axios.get(`https://api.themoviedb.org/3/movie/${params.id}?api_key=dca3f16902da77f476fae29bef18cfb2`);
-        setDetailMovie(response.data);
-        setGenre(response.data);
-        setbackdropPath(`https://image.tmdb.org/t/p/original/${response.data.backdrop_path}`);
-      } catch (error) {
-        alert(error);
-      }
-    }
-    getDetailMovie();
-  }, [params]);
+    dispatch(getDetailMovie(id));
+  }, [id, dispatch]);
+
+  React.useEffect(() => {
+    dispatch(getMe(navigate, null, null));
+  }, [dispatch, navigate]);
 
   const myStyle = {
     backgroundImage: `url(${backdropPath})`,
@@ -39,39 +32,6 @@ function Details() {
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
   };
-
-  useEffect(() => {
-    const getMe = async () => {
-      try {
-        const token = localStorage.getItem("token");
-
-        const response = await axios.get(`${process.env.REACT_APP_API}/v1/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const data = response.data.data;
-
-        setUser(data);
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          // If not valid token
-          if (error.response.status === 401) {
-            localStorage.removeItem("token");
-            // Temporary solution
-            return (window.location.href = "/");
-          }
-
-          toast.error(error.response.data.message);
-          return;
-        }
-        toast.error(error.message);
-      }
-    };
-
-    getMe();
-  }, []);
 
   return (
     <>
@@ -103,10 +63,6 @@ function Details() {
           <div>
             <img src={`https://image.tmdb.org/t/p/original${detailMovie.poster_path}`} alt="moviePoster" className="moviePoster " />
           </div>
-
-          {/* <div className="trailer">
-          <video src={`https://www.youtube.com/watch?v=${trailer.key}`} width={750} height={500} controls></video>
-        </div> */}
         </div>
       </div>
     </>

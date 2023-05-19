@@ -1,31 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Container, Row, Col, Card } from "react-bootstrap";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { searchMovies } from "../redux/actions/searchAction";
 
 function SearchThree() {
   const location = useLocation();
   const { query } = location.state;
-  const [search, setSearch] = useState("");
-  const [movies, setMovies] = useState({});
+  const dispatch = useDispatch();
+
+  const movies = useSelector((state) => state.search.searchResults);
 
   useEffect(() => {
-    axios
-      .get(`https://api.themoviedb.org/3/search/movie?api_key=dca3f16902da77f476fae29bef18cfb2&query=${query}&include_adult=false`)
-      .then((response) => setMovies(response.data.results))
-      .catch((error) => console.log(error));
-    setSearch(query);
-  }, [query]);
+    dispatch(searchMovies(query));
+  }, [query, dispatch]);
 
   const InputValue = () => {
-    if (search !== "") {
+    if (query !== "") {
       return (
         <h3 style={{ marginTop: "6rem", color: "#DADADA" }}>
-          <b>Search Result "{search}"</b>
+          <b>Search Result "{query}"</b>
         </h3>
       );
     }
-    return search;
+    return query;
   };
 
   return (
